@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music AI - Your Muse, Reimagined</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #9d4edd, #5a189a, #7b2cbf);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            height: 100vh;
+            overflow: hidden;
+            color: white;
+        }
+        
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+        
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar.scrolled {
+            background-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: #e9c5ff;
+        }
+        
+        .sign-in-btn {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 30px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+        
+        .sign-in-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 2rem;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .upload-container {
+            margin-top: 3rem;
+            display: flex;
+            gap: 2rem;
+            perspective: 1000px;
+        }
+        
+        .upload-btn {
+            position: relative;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transform-style: preserve-3d;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1),
+                        0 6px 6px rgba(0, 0, 0, 0.1),
+                        0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+        
+        .upload-btn:hover {
+            transform: translateY(-5px) rotateX(10deg);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2),
+                        0 10px 10px rgba(0, 0, 0, 0.1),
+                        0 0 0 1px rgba(255, 255, 255, 0.2);
+        }
+        
+        .upload-btn:active {
+            transform: translateY(0) rotateX(0);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1),
+                        0 3px 3px rgba(0, 0, 0, 0.1),
+                        0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+        
+        .upload-btn::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            border-radius: 15px;
+            z-index: -1;
+            transform: translateZ(-10px);
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .lyrics-input {
+            display: none;
+        }
+        
+        .floating-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: rgba(218, 165, 255, 0.6);
+            border-radius: 50%;
+            animation: float 15s infinite linear;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) scale(1);
+                opacity: 0;
+            }
+        }
+        
+        .status-message {
+            margin-top: 2rem;
+            padding: 1rem;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .status-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .loader {
+            display: none;
+            width: 48px;
+            height: 48px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            margin: 2rem auto;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .result-container {
+            margin-top: 2rem;
+            max-width: 800px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.5s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            display: none;
+        }
+        
+        .result-container.show {
+            opacity: 1;
+            transform: translateY(0);
+            display: block;
+        }
+        
+        .result-title {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #e9c5ff;
+        }
+        
+        .result-text {
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Navbar -->
+    <nav class="navbar">
+        <div class="logo">MusicAI</div>
+        <div class="nav-links">
+            <a href="#">Home</a>
+            <a href="#">Features</a>
+            <a href="#">Pricing</a>
+            <a href="#">About</a>
+        </div>
+        <button class="sign-in-btn">Sign In</button>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Your Muse, Reimagined by AI</h1>
+        <p>Upload your music or lyrics and let our AI transform it into something extraordinary</p>
+        
+        <div class="upload-container">
+            <label for="music-file" class="upload-btn" id="music-upload-btn">
+                <span>Upload MP3 File</span>
+                <input type="file" id="music-file" class="file-input" accept=".mp3">
+            </label>
+            
+            <label for="lyrics-file" class="upload-btn" id="lyrics-upload-btn">
+                <span>Upload Lyrics</span>
+                <input type="file" id="lyrics-file" class="lyrics-input" accept=".txt">
+            </label>
+        </div>
+        
+        <div class="loader" id="loader"></div>
+        <div class="status-message" id="status-message"></div>
+        
+        <div class="result-container" id="result-container">
+            <h3 class="result-title" id="result-title">Results</h3>
+            <div class="result-text" id="result-text"></div>
+        </div>
+    </section>
+    
+    <!-- Floating Particles Background -->
+    <div class="floating-particles" id="particles"></div>
+    
+    <script>
+        // CSRF Token handling
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+    
+        // Floating particles code (unchanged)
+        const particlesContainer = document.getElementById('particles');
+        const particleCount = 40;
+        
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            
+            const size = Math.random() * 12 + 3;
+            const left = Math.random() * 100;
+            const animationDelay = Math.random() * 15;
+            const animationDuration = Math.random() * 10 + 10;
+            const purpleHues = [
+                'rgba(155, 79, 255, 0.7)',
+                'rgba(138, 43, 226, 0.7)',
+                'rgba(177, 103, 255, 0.7)',
+                'rgba(127, 0, 255, 0.7)',
+                'rgba(147, 51, 234, 0.7)'
+            ];
+            const randomPurple = purpleHues[Math.floor(Math.random() * purpleHues.length)];
+            
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.left = `${left}%`;
+            particle.style.animationDelay = `${animationDelay}s`;
+            particle.style.animationDuration = `${animationDuration}s`;
+            particle.style.background = randomPurple;
+            
+            particlesContainer.appendChild(particle);
+        }
+    
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            navbar.classList.toggle('scrolled', window.scrollY > 50);
+        });
+    
+        // DOM elements
+        const resultContainer = document.getElementById('result-container');
+        const resultTitle = document.getElementById('result-title');
+        const resultText = document.getElementById('result-text');
+        const statusMessage = document.getElementById('status-message');
+        const loader = document.getElementById('loader');
+    
+        // Handle music file upload
+        document.getElementById('music-file').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            if (file.type !== 'audio/mpeg') {
+                showStatus('Please upload an MP3 file.', 'error');
+                return;
+            }
+            
+            showStatus('Processing your music...', 'info');
+            loader.style.display = 'block';
+            hideResults();
+            
+            const formData = new FormData();
+            formData.append('audio_file', file);
+            
+            try {
+                const response = await fetch('/process-music/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: formData
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    showStatus('Music successfully processed!', 'success');
+                    showResults('AI Music Analysis', data.result);
+                    if (data.score) {
+                        resultText.innerHTML += `<br><br>Viral Score: ${data.score}/100`;
+                        resultText.innerHTML += `<br>Estimated Potential Streams: ${data.streams.toLocaleString()}`;
+                    }
+                } else {
+                    showStatus(data.message || 'Error processing music', 'error');
+                }
+            } catch (error) {
+                showStatus('Network error. Please check your connection.', 'error');
+                console.error('Error:', error);
+            } finally {
+                loader.style.display = 'none';
+            }
+        });
+    
+        // Handle lyrics file upload
+        document.getElementById('lyrics-file').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            showStatus('Processing your lyrics...', 'info');
+            loader.style.display = 'block';
+            hideResults();
+            
+            const reader = new FileReader();
+            
+            reader.onload = async (event) => {
+                const lyrics = event.target.result;
+                
+                try {
+                    const response = await fetch('/process-lyrics/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'X-CSRFToken': csrftoken
+                        },
+                        body: new URLSearchParams({
+                            'lyrics': lyrics
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    if (response.ok) {
+                        showStatus('Lyrics successfully processed!', 'success');
+                        showResults('AI Lyrics Analysis', data.result);
+                    } else {
+                        showStatus(data.message || 'Error processing lyrics', 'error');
+                    }
+                } catch (error) {
+                    showStatus('Network error. Please check your connection.', 'error');
+                    console.error('Error:', error);
+                } finally {
+                    loader.style.display = 'none';
+                }
+            };
+            
+            reader.readAsText(file);
+        });
+    
+        // UI functions
+        function showStatus(message, type) {
+            statusMessage.textContent = message;
+            statusMessage.className = 'status-message show';
+            statusMessage.style.backgroundColor = type === 'error' ? 'rgba(255, 0, 0, 0.2)' :
+                type === 'success' ? 'rgba(157, 78, 221, 0.3)' : 'rgba(255, 255, 255, 0.1)';
+            statusMessage.style.border = `1px solid ${type === 'error' ? 'rgba(255, 0, 0, 0.3)' :
+                type === 'success' ? 'rgba(157, 78, 221, 0.5)' : 'rgba(255, 255, 255, 0.2)'}`;
+    
+            setTimeout(() => statusMessage.classList.remove('show'), 5000);
+        }
+    
+        function showResults(title, text) {
+            resultTitle.textContent = title;
+            resultText.textContent = text;
+            resultContainer.classList.add('show');
+        }
+    
+        function hideResults() {
+            resultContainer.classList.remove('show');
+        }
+    
+        // 3D button effects (unchanged)
+        const musicUploadBtn = document.getElementById('music-upload-btn');
+        const lyricsUploadBtn = document.getElementById('lyrics-upload-btn');
+    
+        document.addEventListener('mousemove', (e) => {
+            applyMouseEffect(e, musicUploadBtn);
+            applyMouseEffect(e, lyricsUploadBtn);
+        });
+    
+        function applyMouseEffect(e, button) {
+            const { clientX, clientY } = e;
+            const { left, top, width, height } = button.getBoundingClientRect();
+            const x = clientX - left - width / 2;
+            const y = clientY - top - height / 2;
+            const maxRotation = 10;
+            const rotateX = (y / height) * -maxRotation;
+            const rotateY = (x / width) * maxRotation;
+            const range = 100;
+    
+            button.style.transform = Math.abs(x) < range && Math.abs(y) < range ?
+                `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(10px)` :
+                'perspective(1000px) rotateX(0) rotateY(0) translateZ(0)';
+        }
+    
+        musicUploadBtn.addEventListener('mouseleave', () => {
+            musicUploadBtn.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateZ(0)';
+        });
+    
+        lyricsUploadBtn.addEventListener('mouseleave', () => {
+            lyricsUploadBtn.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateZ(0)';
+        });
+    </script>
+</body>
+</html>
