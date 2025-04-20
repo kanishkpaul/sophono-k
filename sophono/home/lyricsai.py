@@ -30,6 +30,7 @@ def analyze_lyrics(lyrics):
     6. Genre analysis (output in <genre></genre> tags)
     7. Comparison with popular songs in this genre
     8. Viral potential score (1-10) based on lyrics alone
+    9. DONT GIVE ASTERISK
 
     Format your response with clear sections for each analysis point.
     """

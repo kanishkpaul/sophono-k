@@ -208,6 +208,7 @@ def generate_final_analysis(results):
 4. Explain how current features compare to trending songs in similar genres
 5. Highlight any unique sonic characteristics that could be emphasized
 6. EXPLAIN IN THE OUTPUT EVERY MCFF VALUE AND WHAT IT MEANS
+7. DONT GIVE ASTERISK
 """
     
     try:
